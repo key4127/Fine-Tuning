@@ -1,5 +1,5 @@
-modelscope=1.29.0
-transformers=4.55.3
-torch=2.8.0
-evaluate=0.4.5
-accelerate=1.10.0
+modelscope==1.29.1
+transformers==4.55.4
+torch==2.8.0
+evaluate==0.4.5
+accelerate==1.10.0
