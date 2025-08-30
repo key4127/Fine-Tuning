@@ -22,7 +22,7 @@ def extract_code(output: str) -> str:
             return output[start_index:end_index].strip()
     return ""
 
-def generate_codes(model, tokenizer, prompts, batch_size=4):
+def generate_codes(model, tokenizer, prompts, k, batch_size=4):
     results = []
     
     for i in range(0, len(prompts), batch_size):
@@ -32,7 +32,13 @@ def generate_codes(model, tokenizer, prompts, batch_size=4):
         full_prompts = []
         for prompt in batch_prompts:
             messages = [
-                {"role": "system", "content": "You are a Python programming assistant."},
+                {
+                    "role": "system", "content": "You are a Python programming assistant."\
+                    "Please output only the required code content. Do not include any of the following:"\
+                    "Test cases or usage examples\n"\
+                    "Code execution instructions\n"\
+                    "Provide only the pure code implementation without any additional content."
+                },
                 {"role": "user", "content": prompt}
             ]
             prompt_text = tokenizer.apply_chat_template(
@@ -65,48 +71,44 @@ def generate_codes(model, tokenizer, prompts, batch_size=4):
             results.append(extract_code(generated_text))
     
     return results
-    
-def evaluate_with_data(model, tokenizer, data, k):
-    prompts = data["prompts"]
-    print("begin generate codes\n")
 
-    codes = generate_codes(model, tokenizer, prompts)
-    print(codes)
+def generate_with_MBPP(input_path: str, output_path: str, model, tokenizer):
+    print("Begin to generate with MBPP:")
 
-    #code_eval = load("code_eval")
-    #test_cases = []
-    #candidates = []
-    #pass_at_k, results = code_eval.compute(
-    #    references=test_cases, 
-    #    predictions=candidates,
-    #    k=ks
-    #)
-
-    #print(f"Pass_at_k: {pass_at_k}")
-    #print(results)
-    #print("\n")
-
-def evaluate_MBPP(data_path: str, model, tokenizer):
-    raw_data = load_data(data_path)
-
+    raw_data = load_data(input_path)
     data = {
         "prompts": [item["text"] for item in raw_data],
         "metric_name": "mbpp"
     }
 
     k = 1
-    evaluate_with_data(model, tokenizer, data, k)
+    codes = generate_codes(model, tokenizer, data["prompts"], k)
 
-def evaluate_HumanEval(data_path: str, model, tokenizer):
-    raw_data = load_data(data_path)
+    with open(output_path, "w", encoding="utf-8") as out:
+        for code in codes:
+            code_json = {"codes": code}
+            out.write(json.dumps(code_json, ensure_ascii=False) + '\n')
 
+    print("MBPP generation ends.")
+
+def generate_with_HumanEval(input_path: str, output_path: str, model, tokenizer):
+    print("Begin to generate with HumanEval:")
+
+    raw_data = load_data(input_path)
     data = {
         "prompts": [item["prompt"] for item in raw_data],
         "metric_name": "humaneval"
     }
 
     k = 1
-    evaluate_with_data(model, tokenizer, data, k)
+    codes = generate_codes(model, tokenizer, data["prompts"], k)
+
+    with open(output_path, "w", encoding="utf-8") as out:
+        for code in codes:
+            code_json = {"codes": code}
+            out.write(json.dumps(code_json, ensure_ascii=False) + '\n')
+
+    print("HumanEval generation ends.")
 
 def evaluate_model(model_path: str):
     model = AutoModelForCausalLM.from_pretrained(
@@ -118,18 +120,19 @@ def evaluate_model(model_path: str):
     tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
     tokenizer.pad_token = tokenizer.eos_token
 
-    MBPP_path = "./data/test/mbpp.jsonl"
-    HumanEval_path = "./data/test/human-eval.jsonl"
+    MBPP_input_path = "./data/test/mbpp.jsonl"
+    HumanEval_input_path = "./data/test/human-eval.jsonl"
+    MBPP_output_path = "./output/raw_mbpp.jsonl1"
+    HumanEval_output_path = "./output/raw_human-eval.jsonl1"
 
-    # evaluate_MBPP(MBPP_path, model, tokenizer)
     start_time = time.time()
-    evaluate_HumanEval(HumanEval_path, model, tokenizer)
+
+    generate_with_MBPP(MBPP_input_path, MBPP_output_path, model, tokenizer)
+    #generate_with_HumanEval(HumanEval_input_path, HumanEval_output_path, model, tokenizer)
+
     end_time = time.time()
     print(f"Evaluation time: {end_time - start_time} seconds")
 
 if __name__ == "__main__":
     model = "./model/Qwen2.5-Coder-1.5B-Instruct/"
     evaluate_model(model)
-
-# single: (k = 1) 2129.947891s
-# with GPU: 
