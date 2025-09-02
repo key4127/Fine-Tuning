@@ -1,6 +1,6 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, TrainingArguments
 from peft import LoraConfig
-from trl import SFTTrainer
+from trl import SFTTrainer, SFTConfig
 from datasets import Dataset
 import torch
 import json
@@ -29,7 +29,7 @@ tokenizer.pad_token = tokenizer.eos_token
 lora_config = LoraConfig(
     r=16,
     lora_alpha=32,
-    target_modules=["q_proj", "k_proj", "v_proj", "o_proj"],
+    target_modules=["q_proj", "v_proj"],
     lora_dropout=0.05,
     bias="none",
     task_type="CAUSAL_LM"
@@ -62,8 +62,7 @@ trainer = SFTTrainer(
     model=model,
     train_dataset=qwen_dataset,
     peft_config=lora_config,
-    max_seq_length=512,
-    tokenizer=tokenizer,
+    processing_class=tokenizer,
     args=training_args
 )
 
