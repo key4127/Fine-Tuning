@@ -1,4 +1,4 @@
-from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig, TrainingArguments
+from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from peft import LoraConfig
 from trl import SFTTrainer, SFTConfig
 from datasets import Dataset
@@ -42,11 +42,16 @@ with open(data_path, "r", encoding="utf-8") as data:
     for line in data:
         record = json.loads(line.strip())
         new_conv = [{"role": item["from"], "content": item["value"]} for item in record]
-        formatted_data.append({"messages": new_conv})
+        formatted = tokenizer.apply_chat_template(
+            new_conv, 
+            tokenize=False, 
+            add_generation_prompt=False
+        )
+        formatted_data.append({"messages": formatted})
 
 qwen_dataset = Dataset.from_list(formatted_data)
 
-training_args = TrainingArguments(
+training_args = SFTConfig(
     output_dir="./model_output/QLora",
     num_train_epochs=3,
     per_device_train_batch_size=4,
@@ -55,7 +60,9 @@ training_args = TrainingArguments(
     learning_rate=2e-4,
     fp16=True,
     logging_steps=100,
-    save_strategy="epoch"
+    save_strategy="epoch",
+    max_length=512,
+    dataset_text_field="messages"
 )
 
 trainer = SFTTrainer(
