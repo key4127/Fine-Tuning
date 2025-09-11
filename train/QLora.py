@@ -4,6 +4,7 @@ from trl import SFTTrainer, SFTConfig
 from datasets import Dataset
 import torch
 import json
+import random
 
 bnb_config = BitsAndBytesConfig(
     load_in_4bit=True,
@@ -35,12 +36,23 @@ lora_config = LoraConfig(
     task_type="CAUSAL_LM"
 )
 
-data_path = "./data/train/alpaca_data.jsonl"
+data_paths = [
+    "./data/train/alpaca_data.jsonl",
+    "./data/train/taco_data.jsonl"
+]
 formatted_data = []
 
-with open(data_path, "r", encoding="utf-8") as data:
-    for line in data:
-        record = json.loads(line.strip())
+for data_path in data_paths:
+    with open(data_path, "r", encoding="utf-8") as data:
+        all_lines = data.readlines()
+
+    total_lines = len(all_lines)
+    selected_indices = random.sample(range(total_lines), total_lines // 2)
+    selected_indices.sort()
+
+    for idx in selected_indices:
+        line = all_lines[idx].strip()
+        record = json.loads(line)
         new_conv = [{"role": item["from"], "content": item["value"]} for item in record]
         formatted = tokenizer.apply_chat_template(
             new_conv, 
@@ -77,4 +89,4 @@ print("begin training...")
 trainer.train()
 
 print("save training...")
-trainer.save_model("./model_output_QLora/final1")
+trainer.save_model("./model_output/QLora/final1")
