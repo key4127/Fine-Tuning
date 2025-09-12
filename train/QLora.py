@@ -28,8 +28,8 @@ tokenizer = AutoTokenizer.from_pretrained(
 tokenizer.pad_token = tokenizer.eos_token
 
 lora_config = LoraConfig(
-    r=8,
-    lora_alpha=16,
+    r=4,
+    lora_alpha=8,
     target_modules=["q_proj", "v_proj"],
     lora_dropout=0.05,
     bias="none",
@@ -89,4 +89,4 @@ print("begin training...")
 trainer.train()
 
 print("save training...")
-trainer.save_model("./model_output/QLora/random_data_epoch_1/")
+trainer.save_model("./model_output/QLora/peft_random_data_r_4/")
