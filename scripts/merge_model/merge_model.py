@@ -3,12 +3,12 @@ from peft import PeftModel
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
 base_model_path = "./model/Qwen2.5-Coder-1.5B-Instruct/"
-peft_model_path = "./model_output/QLora/peft_final1"
-merged_model_save_path = "./model_output/QLora/final1"
+peft_model_path = "./model_output/QLora/peft_random_data_epoch_1/"
+merged_model_save_path = "./model_output/QLora/random_data_epoch_1/"
 
 base_model = AutoModelForCausalLM.from_pretrained(
     base_model_path,
-    torch_dtype=torch.bfloat16,
+    dtype=torch.bfloat16,
     device_map="auto"
 )
 

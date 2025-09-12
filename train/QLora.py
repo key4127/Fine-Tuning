@@ -28,8 +28,8 @@ tokenizer = AutoTokenizer.from_pretrained(
 tokenizer.pad_token = tokenizer.eos_token
 
 lora_config = LoraConfig(
-    r=16,
-    lora_alpha=32,
+    r=8,
+    lora_alpha=16,
     target_modules=["q_proj", "v_proj"],
     lora_dropout=0.05,
     bias="none",
@@ -65,11 +65,11 @@ qwen_dataset = Dataset.from_list(formatted_data)
 
 training_args = SFTConfig(
     output_dir="./model_output/QLora",
-    num_train_epochs=3,
+    num_train_epochs=1,
     per_device_train_batch_size=4,
     gradient_accumulation_steps=4,
     optim="paged_adamw_8bit",
-    learning_rate=2e-4,
+    learning_rate=1e-4,
     fp16=True,
     logging_steps=100,
     save_strategy="epoch",
@@ -89,4 +89,4 @@ print("begin training...")
 trainer.train()
 
 print("save training...")
-trainer.save_model("./model_output/QLora/final1")
+trainer.save_model("./model_output/QLora/random_data_epoch_1/")

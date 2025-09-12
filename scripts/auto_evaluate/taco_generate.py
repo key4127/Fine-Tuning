@@ -60,9 +60,9 @@ taco = load_dataset('BAAI/TACO', split='test')
 
 output_file = './data/generate/taco_origin.py'
 
-n_samples = 200
+n_samples = 10
 temperature = 0.2
-top_p = 0.95 
+top_p = 0.95
 
 output = []
 for idx, sample in enumerate(taco):
@@ -89,11 +89,12 @@ for idx, sample in enumerate(taco):
     generations = []
     for i in range(n_samples):
         seed = i
-        generation = predict(device, model, tokenizer, prompt, seed, top_p, temperature, max_length=2048)
+        generation = predict(device, model, tokenizer, prompt, seed, top_p, temperature, max_length=512)
         clean_code = truncate_after_eof_strings(generation)
         generations.append(clean_code)
     results["output"] = generations
     output.append(results)
+    print(f'{idx} tests have been finished.')
 
 with open(output_file, 'w') as f:
     json.dump(output, f, indent=4)
