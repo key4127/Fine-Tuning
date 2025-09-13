@@ -15,7 +15,14 @@ def process_alpaca_data(item):
 
     conversation = [
         {"from": "system", "value": "You are a Python programming assistant. " \
-                                    "You need to provide code that meets the user's requirements"},
+                                    "You need to provide code that meets the user's requirements." \
+                                    "Please carefully solve the following programming problem. When writing code, pay special attention to:" \
+                                    "Edge Cases: Consider empty inputs, extreme values, and special situations\n" \
+                                    "Problem Requirements: Read the output format and requirements carefully to ensure correct data types and formats are returned\n" \
+                                    "Algorithm Selection: Choose the correct algorithm to avoid logical errors\n" \
+                                    "Completeness: Ensure all possible input scenarios are handled\n" \
+                                    "Code Robustness: Perform necessary input validation and error handling"
+        },
         {"from": "user", "value": user_prompt},
         {"from": "assistant", "value": assistant_response}
     ]
