@@ -15,7 +15,7 @@ def generate_taco_to_jsonl(sample):
         user_prompt = user_prompt + "You should continue to supplement based on the following code: " + sample['starter_code']
     if sample['input_output']:
         input_output = json.loads(sample['input_output'])
-        if input_output['inputs'] and input_output['outputs']:
+        if input_output['inputs'] or input_output['outputs']:
             user_prompt += f"\nExample inputs: {len(input_output['inputs'])} test cases: "
             user_prompt += "; ".join([f'input: "{inp}"' for inp in input_output['inputs']])
             user_prompt += f"\nExpected outputs: "
