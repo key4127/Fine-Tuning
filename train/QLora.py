@@ -69,7 +69,7 @@ training_args = SFTConfig(
     per_device_train_batch_size=4,
     gradient_accumulation_steps=4,
     optim="paged_adamw_8bit",
-    learning_rate=1e-4,
+    learning_rate=2e-4,
     fp16=True,
     logging_steps=100,
     save_strategy="epoch",
@@ -89,4 +89,4 @@ print("begin training...")
 trainer.train()
 
 print("save training...")
-trainer.save_model("./model_output/QLora/peft_random_data_r_4_new/")
+trainer.save_model("./model_output/QLora/peft_learning_rate/")
