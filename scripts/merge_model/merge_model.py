@@ -3,8 +3,8 @@ from peft import PeftModel
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
 base_model_path = "./model/Qwen2.5-Coder-1.5B-Instruct/"
-peft_model_path = "./model_output/QLora/peft_half_both/"
-merged_model_save_path = "./model_output/QLora/half_both/"
+peft_model_path = "./model_output/QLora/peft_only_taco/"
+merged_model_save_path = "./model_output/QLora/only_taco/"
 
 base_model = AutoModelForCausalLM.from_pretrained(
     base_model_path,

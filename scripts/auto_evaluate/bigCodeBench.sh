@@ -1,5 +1,5 @@
 bigcodebench.evaluate \
-  --model "./model_output/QLora/half_both/" \
+  --model "./model_output/QLora/only_taco/" \
   --execution gradio \
   --split instruct \
   --subset full \

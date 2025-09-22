@@ -37,7 +37,7 @@ lora_config = LoraConfig(
 )
 
 data_paths = [
-    "./data/train/alpaca_data.jsonl",
+    # "./data/train/alpaca_data.jsonl",
     "./data/train/taco_data.jsonl"
 ]
 formatted_data = []
@@ -47,7 +47,7 @@ for data_path in data_paths:
         all_lines = data.readlines()
 
     total_lines = len(all_lines)
-    selected_indices = random.sample(range(total_lines), total_lines // 4)
+    selected_indices = random.sample(range(total_lines), total_lines // 2)
     selected_indices.sort()
 
     for idx in selected_indices:
@@ -89,4 +89,4 @@ print("begin training...")
 trainer.train()
 
 print("save training...")
-trainer.save_model("./model_output/QLora/peft_half_both/")
+trainer.save_model("./model_output/QLora/peft_only_taco/")
