@@ -1,5 +1,5 @@
 bigcodebench.evaluate \
-  --model "./model_output/QLora/learning_rate/" \
+  --model "./model_output/QLora/half_both/" \
   --execution gradio \
   --split instruct \
   --subset full \
